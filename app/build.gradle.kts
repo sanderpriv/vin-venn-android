@@ -68,6 +68,8 @@ dependencies {
 
     // Tests
     testImplementation(libs.junit)
+    testImplementation (libs.kotlin.test)
+    testImplementation(libs.koin.test)
 
     // UiTests
     androidTestImplementation(libs.androidx.junit)

@@ -2,9 +2,11 @@ package no.sanderpriv.vinvenn.di
 
 import no.sanderpriv.vinvenn.api.VinVennApi
 import no.sanderpriv.vinvenn.repository.VinVennRepository
+import no.sanderpriv.vinvenn.ui.MealsViewModel
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import org.koin.core.module.dsl.singleOf
+import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -13,7 +15,7 @@ import java.util.concurrent.TimeUnit
 
 object VinVennDI {
 
-    val apiModule = module {
+    private val apiModule = module {
         single<VinVennApi> {
             Retrofit.Builder()
                 .baseUrl("https://vinvenn.no/api/")
@@ -33,8 +35,15 @@ object VinVennDI {
         }
     }
 
-    val repositoryModule = module {
+    private val repositoryModule = module {
         singleOf(::VinVennRepository)
     }
-}
 
+    private val viewModelModule = module {
+        viewModelOf(::MealsViewModel)
+    }
+
+    fun getAppModules() = module {
+        includes(apiModule, repositoryModule, viewModelModule)
+    }
+}

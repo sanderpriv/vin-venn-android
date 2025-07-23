@@ -16,12 +16,7 @@ class VinVennApplication : Application() {
         startKoin {
             androidLogger(Level.ERROR)
             androidContext(this@VinVennApplication)
-            modules(
-                listOf(
-                    VinVennDI.apiModule,
-                    VinVennDI.repositoryModule,
-                )
-            )
+            modules(VinVennDI.getAppModules())
         }
 
         Timber.plant(Timber.DebugTree())
