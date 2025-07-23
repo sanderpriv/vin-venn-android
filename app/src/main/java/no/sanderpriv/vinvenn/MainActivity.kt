@@ -7,6 +7,8 @@ import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.core.net.toUri
+import no.sanderpriv.vinvenn.ui.VinvennScreen
 import no.sanderpriv.vinvenn.ui.theme.VinvennTheme
 
 class MainActivity : ComponentActivity() {

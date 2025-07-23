@@ -1,4 +1,4 @@
-package no.sanderpriv.vinvenn.ui
+package no.sanderpriv.vinvenn.ui.meals
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -9,7 +9,6 @@ import kotlinx.coroutines.launch
 import no.sanderpriv.vinvenn.domain.MealsUiModel
 import no.sanderpriv.vinvenn.repository.VinVennRepository
 
-
 class MealsViewModel(
     private val vinVennRepository: VinVennRepository,
 ) : ViewModel() {
@@ -17,11 +16,22 @@ class MealsViewModel(
     private val _mealsUiModel = MutableStateFlow<MealsUiModel>(MealsUiModel.Loading)
     val mealsUiModel = _mealsUiModel.asStateFlow()
 
+    private val _isRefreshing = MutableStateFlow(false)
+    val isRefreshing = _isRefreshing.asStateFlow()
+
     init {
-        viewModelScope.launch { _mealsUiModel.update { getMeals() } }
+        loadMeals()
     }
 
-    fun refresh() = viewModelScope.launch { _mealsUiModel.update { getMeals() } }
+    fun refresh() {
+        _isRefreshing.update { true }
+        loadMeals()
+        _isRefreshing.update { false }
+    }
+
+    fun loadMeals() {
+        viewModelScope.launch { _mealsUiModel.update { getMeals() } }
+    }
 
     private suspend fun getMeals(): MealsUiModel {
         val meals = vinVennRepository.getMeals().getOrNull()

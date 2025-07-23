@@ -2,7 +2,7 @@ package no.sanderpriv.vinvenn.di
 
 import no.sanderpriv.vinvenn.api.VinVennApi
 import no.sanderpriv.vinvenn.repository.VinVennRepository
-import no.sanderpriv.vinvenn.ui.MealsViewModel
+import no.sanderpriv.vinvenn.ui.meals.MealsViewModel
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import org.koin.core.module.dsl.singleOf
