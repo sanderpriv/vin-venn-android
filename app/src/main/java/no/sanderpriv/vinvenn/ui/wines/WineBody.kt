@@ -94,7 +94,7 @@ fun WineBody(body: Wine.BodyInfo) {
                 withStyle(
                     SpanStyle(fontWeight = FontWeight.Bold)
                 ) {
-                    append(" - Tapper")
+                    append(" - Vinvenn")
                 }
                 appendInlineContent("icon")
             }
