@@ -83,7 +83,7 @@ class VinVennRepositoryTest {
                 searchString = "id_1",
             )
         } returns wines
-        val result = repository.findWinesByMealId("id_2") // WRONG!
+        val result = repository.findWinesByMealId("id_1")
         assertTrue(result.isSuccess)
         val wine = result.getOrThrow().single()
 
