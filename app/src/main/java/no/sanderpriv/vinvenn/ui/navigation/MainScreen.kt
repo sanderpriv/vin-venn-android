@@ -10,7 +10,7 @@ sealed interface MainScreen {
 
     @Serializable
     data class FindWinesScreen(
-        val searchString: String,
+        val mealId: String,
         val title: String,
     ) : MainScreen
 }

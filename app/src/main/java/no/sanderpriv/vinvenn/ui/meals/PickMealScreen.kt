@@ -84,7 +84,7 @@ fun MealsView(
 private fun Preview() = VinvennTheme {
     MealsView(
         meals = listOf(
-            Meal("Aioli", "")
+            Meal("id", "Aioli")
         ), onMealClick = { }
     )
 }

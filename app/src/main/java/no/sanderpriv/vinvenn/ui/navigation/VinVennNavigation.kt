@@ -25,7 +25,7 @@ fun VinVennNavigation(
             PickMealScreen(
                 onMealClick = { meal ->
                     navController.navigate(MainScreen.FindWinesScreen(
-                        searchString = meal.searchString,
+                        mealId = meal.id,
                         title = meal.name,
                     ))
                 }
@@ -33,9 +33,9 @@ fun VinVennNavigation(
         }
         composable<MainScreen.FindWinesScreen> { backStackEntry ->
             val args = backStackEntry.toRoute<MainScreen.FindWinesScreen>()
-            val searchString = args.searchString
+            val mealId = args.mealId
             val title = args.title
-            FindWinesScreen(searchString, title, urlClick)
+            FindWinesScreen(mealId, title, urlClick)
         }
     }
 }

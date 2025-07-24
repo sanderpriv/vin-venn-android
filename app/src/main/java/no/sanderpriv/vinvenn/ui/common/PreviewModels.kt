@@ -4,11 +4,11 @@ import no.sanderpriv.vinvenn.domain.Wine
 
 object PreviewModels {
     val wine = Wine(
-        0,
-        Wine.HeaderInfo(
+        id = 0,
+        header = Wine.HeaderInfo(
             "Alamos Malbec 2023",
             159.9,
-            "yr.no",
+            "https://www.vinmonopolet.no",
             "Rødvin",
             "75 cl",
             "Argentina, Mendoza"
@@ -30,5 +30,13 @@ object PreviewModels {
         recommendationOrder = 0,
     )
 
-    val wines = listOf(wine, wine, wine, wine, wine.copy(recommendationOrder = 1), wine.copy(recommendationOrder = 2), wine.copy(recommendationOrder = 2))
+    val wines = listOf(
+        wine,
+        wine,
+        wine,
+        wine,
+        wine.copy(recommendationOrder = 1),
+        wine.copy(recommendationOrder = 2),
+        wine.copy(recommendationOrder = 2),
+    )
 }

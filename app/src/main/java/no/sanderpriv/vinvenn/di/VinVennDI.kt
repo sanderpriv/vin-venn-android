@@ -45,7 +45,7 @@ object VinVennDI {
         viewModelOf(::MealsViewModel)
         viewModel { parameters ->
             WinesViewModel(
-                searchString = parameters.get(),
+                mealId = parameters.get(),
                 vinVennRepository = get()
             )
         }

@@ -10,7 +10,7 @@ import no.sanderpriv.vinvenn.domain.WinesUiModel
 import no.sanderpriv.vinvenn.repository.VinVennRepository
 
 class WinesViewModel(
-    searchString: String,
+    mealId: String,
     private val vinVennRepository: VinVennRepository,
 ) : ViewModel() {
 
@@ -19,12 +19,12 @@ class WinesViewModel(
 
     init {
         viewModelScope.launch {
-            viewModelScope.launch { _winesUiResult.update { getWines(searchString) } }
+            viewModelScope.launch { _winesUiResult.update { findWinesByMealId(mealId) } }
         }
     }
 
-    private suspend fun getWines(searchString: String): WinesUiModel {
-        val wines = vinVennRepository.findWines(searchString).getOrNull()
+    private suspend fun findWinesByMealId(searchString: String): WinesUiModel {
+        val wines = vinVennRepository.findWinesByMealId(searchString).getOrNull()
 
         if (wines == null) return WinesUiModel.Failed
 

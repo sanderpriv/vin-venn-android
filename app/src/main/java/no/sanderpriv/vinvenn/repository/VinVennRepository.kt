@@ -19,14 +19,14 @@ class VinVennRepository(
         ) { vinVennApi.getMeals() }
     }
 
-    suspend fun findWines(searchString: String): Result<List<Wine>> = repositoryCall(
+    suspend fun findWinesByMealId(mealId: String): Result<List<Wine>> = repositoryCall(
         mapper = { dto -> WineMapper.map(dto) },
     ) {
         vinVennApi.findWines(
             minPrice = 0,
             maxPrice = 2000,
             location = "bestillingsutvalget",
-            searchString = searchString
+            searchString = mealId
         )
     }
 }

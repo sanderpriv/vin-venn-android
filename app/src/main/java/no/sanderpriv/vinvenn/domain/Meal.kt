@@ -1,8 +1,8 @@
 package no.sanderpriv.vinvenn.domain
 
 data class Meal(
+    val id: String,
     val name: String,
-    val searchString: String
 )
 
 sealed interface MealsUiModel {
