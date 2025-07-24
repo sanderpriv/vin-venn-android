@@ -2,26 +2,36 @@ package no.sanderpriv.vinvenn.repository
 
 import com.google.gson.internal.LinkedTreeMap
 import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import no.sanderpriv.vinvenn.api.MealsDto
 import no.sanderpriv.vinvenn.api.VinVennApi
 import no.sanderpriv.vinvenn.api.WineDto
+import no.sanderpriv.vinvenn.db.MealsDb
+import no.sanderpriv.vinvenn.db.VinVennCacheDao
 import no.sanderpriv.vinvenn.domain.Meal
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
+import retrofit2.Response
+import java.util.Date
+import java.util.concurrent.TimeUnit
 
 class VinVennRepositoryTest {
 
     private lateinit var vinVennApi: VinVennApi
+    private lateinit var cache: VinVennCacheDao
     private lateinit var repository: VinVennRepository
 
     @Before
     fun setUp() {
         vinVennApi = mockk<VinVennApi>()
-        repository = VinVennRepository(vinVennApi)
+        cache = mockk<VinVennCacheDao>(relaxed = true) {
+            coEvery { getMealsDb() } returns null
+        }
+        repository = VinVennRepository(vinVennApi, cache)
     }
 
     @Test
@@ -32,7 +42,7 @@ class VinVennRepositoryTest {
                 put("Burger", "id_2")
             }
         )
-        coEvery { vinVennApi.getMeals() } returns mealsDto
+        coEvery { vinVennApi.getMeals() } returns Response.success(mealsDto)
         val expectedMeals = listOf(
             Meal(id = "id_1", name = "Pizza"),
             Meal(id = "id_2", name = "Burger"),
@@ -47,6 +57,45 @@ class VinVennRepositoryTest {
         coEvery { vinVennApi.getMeals() } throws RuntimeException("API error")
         val result = repository.getMeals()
         assertTrue(result.isFailure)
+    }
+
+    // Test when cache is NOT expired (should use cache)
+    @Test
+    fun `getMeals uses cache when not expired`() = runTest {
+        val cachedMealsDto = MealsDto(
+            data = LinkedTreeMap<String, String>().apply {
+                put("Sushi", "id_3")
+            }
+        )
+        val cacheDb = MealsDb(
+            dto = cachedMealsDto,
+            expirationDate = Date().apply { time += TimeUnit.HOURS.toSeconds(2) }
+        )
+        coEvery { cache.getMealsDb() } returns cacheDb
+        coEvery { vinVennApi.getMeals() } returns Response.success(cachedMealsDto)
+        val result = repository.getMeals()
+        assertTrue(result.isSuccess)
+        assertEquals(listOf(Meal(id = "id_3", name = "Sushi")), result.getOrNull())
+    }
+
+    // Test when cache IS expired (should fetch from API)
+    @Test
+    fun `getMeals fetches from API when cache is expired`() = runTest {
+        val expiredCacheDb = MealsDb(
+            dto = MealsDto(data = LinkedTreeMap()),
+            expirationDate = Date().apply { time -= TimeUnit.HOURS.toMillis(2) }
+        )
+        val apiMealsDto = MealsDto(
+            data = LinkedTreeMap<String, String>().apply {
+                put("Taco", "id_4")
+            }
+        )
+        coEvery { cache.getMealsDb() } returns expiredCacheDb
+        coEvery { vinVennApi.getMeals() } returns Response.success(apiMealsDto)
+        val result = repository.getMeals()
+        assertTrue(result.isSuccess)
+        assertEquals(listOf(Meal(id = "id_4", name = "Taco")), result.getOrNull())
+        coVerify(exactly = 1) { vinVennApi.getMeals() }
     }
 
     @Test

@@ -1,11 +1,14 @@
 package no.sanderpriv.vinvenn.di
 
 import no.sanderpriv.vinvenn.api.VinVennApi
+import no.sanderpriv.vinvenn.db.VinVennCacheDao
+import no.sanderpriv.vinvenn.db.VinVennDatabase
 import no.sanderpriv.vinvenn.repository.VinVennRepository
 import no.sanderpriv.vinvenn.ui.meals.MealsViewModel
 import no.sanderpriv.vinvenn.ui.wines.WinesViewModel
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
+import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.dsl.singleOf
 import org.koin.core.module.dsl.viewModel
 import org.koin.core.module.dsl.viewModelOf
@@ -36,6 +39,15 @@ object VinVennDI {
                 .create(VinVennApi::class.java)
         }
     }
+    private val databaseModule = module {
+        single<VinVennDatabase> {
+            VinVennDatabase.buildDb(androidContext())
+        }
+
+        factory<VinVennCacheDao> {
+            get<VinVennDatabase>().vinVennCacheDao()
+        }
+    }
 
     private val repositoryModule = module {
         singleOf(::VinVennRepository)
@@ -52,6 +64,6 @@ object VinVennDI {
     }
 
     fun getAppModules() = module {
-        includes(apiModule, repositoryModule, viewModelModule)
+        includes(apiModule, databaseModule, repositoryModule, viewModelModule)
     }
 }
