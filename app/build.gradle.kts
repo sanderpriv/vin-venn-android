@@ -59,6 +59,9 @@ dependencies {
     // Imaging
     implementation(libs.coil.compose)
 
+    // Web
+    implementation(libs.androidx.browser)
+
     // Navigation
     implementation(libs.androidx.navigation.compose)
     implementation(libs.kotlinx.serialization.json)

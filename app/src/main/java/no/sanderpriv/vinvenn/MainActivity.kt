@@ -1,12 +1,12 @@
 package no.sanderpriv.vinvenn
 
-import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.browser.customtabs.CustomTabsIntent
 import androidx.core.net.toUri
 import no.sanderpriv.vinvenn.ui.VinvennScreen
 import no.sanderpriv.vinvenn.ui.theme.VinvennTheme
@@ -21,11 +21,14 @@ class MainActivity : ComponentActivity() {
         setContent {
             VinvennTheme {
                 VinvennScreen(
-                    urlClick = { url ->
-                        startActivity(Intent(Intent.ACTION_VIEW, url.toUri()))
-                    }
+                    urlClick = ::onUrlClick,
                 )
             }
         }
+    }
+
+    private fun onUrlClick(url: String) {
+        val uri = url.toUri()
+        CustomTabsIntent.Builder().build().launchUrl(this, uri)
     }
 }
