@@ -2,12 +2,12 @@ package no.sanderpriv.vinvenn.ui.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
+import androidx.navigation.toRoute
 import no.sanderpriv.vinvenn.ui.meals.PickMealScreen
+import no.sanderpriv.vinvenn.ui.wines.FindWinesScreen
 
 @Composable
 fun VinVennNavigation(
@@ -18,30 +18,24 @@ fun VinVennNavigation(
 
     NavHost(
         navController = navController,
-        startDestination = "pick_meal",
+        startDestination = MainScreen.MealsScreen,
         modifier = modifier,
     ) {
-        composable("pick_meal") {
+        composable<MainScreen.MealsScreen> {
             PickMealScreen(
-                onMealClick = { searchString, title ->
-                    navController.navigate("find_wines?searchString=$searchString&title=$title")
+                onMealClick = { meal ->
+                    navController.navigate(MainScreen.FindWinesScreen(
+                        searchString = meal.searchString,
+                        title = meal.name,
+                    ))
                 }
             )
         }
-        composable(
-            route = "find_wines?searchString={searchString}&title={title}",
-            arguments = listOf(
-                navArgument("searchString") { type = NavType.StringType },
-                navArgument("title") { type = NavType.StringType },
-            ),
-        ) { backStackEntry ->
-//            val searchString = backStackEntry.arguments?.getString("searchString")
-//            val title = backStackEntry.arguments?.getString("title")
-//            if (searchString == null || title == null) {
-//                Text("oops!", color = onSurface)
-//            } else {
-//                FindWinesScreen(searchString, title, urlClick)
-//            }
+        composable<MainScreen.FindWinesScreen> { backStackEntry ->
+            val args = backStackEntry.toRoute<MainScreen.FindWinesScreen>()
+            val searchString = args.searchString
+            val title = args.title
+            FindWinesScreen(searchString, title, urlClick)
         }
     }
 }

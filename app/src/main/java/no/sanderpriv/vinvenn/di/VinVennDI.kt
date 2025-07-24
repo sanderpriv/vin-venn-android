@@ -3,9 +3,11 @@ package no.sanderpriv.vinvenn.di
 import no.sanderpriv.vinvenn.api.VinVennApi
 import no.sanderpriv.vinvenn.repository.VinVennRepository
 import no.sanderpriv.vinvenn.ui.meals.MealsViewModel
+import no.sanderpriv.vinvenn.ui.wines.WinesViewModel
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import org.koin.core.module.dsl.singleOf
+import org.koin.core.module.dsl.viewModel
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 import retrofit2.Retrofit
@@ -41,6 +43,12 @@ object VinVennDI {
 
     private val viewModelModule = module {
         viewModelOf(::MealsViewModel)
+        viewModel { parameters ->
+            WinesViewModel(
+                searchString = parameters.get(),
+                vinVennRepository = get()
+            )
+        }
     }
 
     fun getAppModules() = module {

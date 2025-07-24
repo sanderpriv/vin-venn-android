@@ -4,3 +4,9 @@ data class Meal(
     val name: String,
     val searchString: String
 )
+
+sealed interface MealsUiModel {
+    data object Loading : MealsUiModel
+    data object Failed : MealsUiModel
+    data class Success(val meals: List<Meal>) : MealsUiModel
+}

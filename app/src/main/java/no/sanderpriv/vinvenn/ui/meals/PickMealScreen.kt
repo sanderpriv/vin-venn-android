@@ -22,7 +22,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import no.sanderpriv.vinvenn.domain.Meal
 import no.sanderpriv.vinvenn.domain.MealsUiModel
-import no.sanderpriv.vinvenn.ui.LoadingView
+import no.sanderpriv.vinvenn.ui.common.LoadingView
 import no.sanderpriv.vinvenn.ui.theme.VinvennTheme
 import no.sanderpriv.vinvenn.ui.theme.background
 import no.sanderpriv.vinvenn.ui.theme.onSurface
@@ -32,7 +32,7 @@ import org.koin.androidx.compose.koinViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PickMealScreen(
-    onMealClick: (searchString: String, title: String) -> Unit,
+    onMealClick: (meal: Meal) -> Unit,
     viewModel: MealsViewModel = koinViewModel(),
 ) {
     val mealsResult by viewModel.mealsUiModel.collectAsStateWithLifecycle()
@@ -54,7 +54,7 @@ fun PickMealScreen(
 @Composable
 fun MealsView(
     meals: List<Meal>,
-    onMealClick: (searchString: String, title: String) -> Unit,
+    onMealClick: (meal: Meal) -> Unit,
 ) = LazyColumn(
     verticalArrangement = Arrangement.spacedBy(8.dp),
     contentPadding = PaddingValues(vertical = 8.dp),
@@ -64,20 +64,27 @@ fun MealsView(
         Card(
             elevation = CardDefaults.elevatedCardElevation(),
             colors = CardDefaults.elevatedCardColors(containerColor = surface),
-            onClick = { onMealClick(meal.searchString, meal.name) },
+            onClick = { onMealClick(meal) },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 8.dp)
         ) {
-            Text(text = meal.name, modifier = Modifier.padding(16.dp), fontSize = 14.sp, color = onSurface)
+            Text(
+                text = meal.name,
+                modifier = Modifier.padding(16.dp),
+                fontSize = 14.sp,
+                color = onSurface
+            )
         }
     }
 }
 
 @Preview
 @Composable
-private fun MealsPreview() = VinvennTheme {
-    MealsView(meals = listOf(
-        Meal("Aioli", "")
-    ), onMealClick = { _, _ ->})
+private fun Preview() = VinvennTheme {
+    MealsView(
+        meals = listOf(
+            Meal("Aioli", "")
+        ), onMealClick = { }
+    )
 }

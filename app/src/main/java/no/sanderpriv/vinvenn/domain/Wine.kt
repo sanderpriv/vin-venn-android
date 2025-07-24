@@ -32,3 +32,9 @@ data class Wine(
         val grape: String,
     )
 }
+
+sealed interface WinesUiModel {
+    data object Loading : WinesUiModel
+    data object Failed : WinesUiModel
+    data class Success(val wines: List<Wine>) : WinesUiModel
+}
