@@ -21,7 +21,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import no.sanderpriv.vinvenn.domain.Meal
-import no.sanderpriv.vinvenn.domain.MealsUiModel
 import no.sanderpriv.vinvenn.ui.common.LoadingView
 import no.sanderpriv.vinvenn.ui.theme.VinvennTheme
 import no.sanderpriv.vinvenn.ui.theme.background
@@ -36,17 +35,15 @@ fun PickMealScreen(
     viewModel: MealsViewModel = koinViewModel(),
 ) {
     val mealsResult by viewModel.mealsUiModel.collectAsStateWithLifecycle()
-    val isRefreshing by viewModel.isRefreshing.collectAsStateWithLifecycle()
 
     PullToRefreshBox(
-        isRefreshing = isRefreshing,
+        isRefreshing = mealsResult.isRefreshing,
         onRefresh = viewModel::refresh,
     ) {
-        val currentMealsResult = mealsResult
-        when (currentMealsResult) {
-            is MealsUiModel.Failed -> FailedView(onRetry = viewModel::loadMeals)
-            is MealsUiModel.Loading -> LoadingView()
-            is MealsUiModel.Success -> MealsView(currentMealsResult.meals, onMealClick)
+        when {
+            mealsResult.isLoading -> LoadingView()
+            mealsResult.isError -> FailedView(onRetry = viewModel::loadMeals)
+            else -> MealsView(mealsResult.meals, onMealClick)
         }
     }
 }
@@ -84,7 +81,14 @@ fun MealsView(
 private fun Preview() = VinvennTheme {
     MealsView(
         meals = listOf(
-            Meal("id", "Aioli")
+            Meal("id", "Aioli"),
+            Meal("id", "Aioli"),
+            Meal("id", "Aioli"),
+            Meal("id", "Aioli"),
+            Meal("id", "Aioli"),
+            Meal("id", "Aioli"),
+            Meal("id", "Aioli"),
+            Meal("id", "Aioli"),
         ), onMealClick = { }
     )
 }

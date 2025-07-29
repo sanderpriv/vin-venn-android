@@ -13,31 +13,39 @@ class MealsViewModel(
     private val vinVennRepository: VinVennRepository,
 ) : ViewModel() {
 
-    private val _mealsUiModel = MutableStateFlow<MealsUiModel>(MealsUiModel.Loading)
+    private val _mealsUiModel = MutableStateFlow(MealsUiModel())
     val mealsUiModel = _mealsUiModel.asStateFlow()
-
-    private val _isRefreshing = MutableStateFlow(false)
-    val isRefreshing = _isRefreshing.asStateFlow()
 
     init {
         loadMeals()
     }
 
     fun refresh() {
-        _isRefreshing.update { true }
+        _mealsUiModel.update { it.copy(isRefreshing = true) }
         loadMeals()
-        _isRefreshing.update { false }
+        _mealsUiModel.update { it.copy(isRefreshing = true) }
     }
 
     fun loadMeals() {
-        viewModelScope.launch { _mealsUiModel.update { getMeals() } }
-    }
+        viewModelScope.launch {
+            val meals = vinVennRepository.getMeals().getOrNull()
+            if (meals.isNullOrEmpty()) {
+                _mealsUiModel.update {
+                    it.copy(
+                        isLoading = false,
+                        isError = true,
+                    )
+                }
+                return@launch
+            }
 
-    private suspend fun getMeals(): MealsUiModel {
-        val meals = vinVennRepository.getMeals().getOrNull()
-
-        if (meals == null) return MealsUiModel.Failed
-
-        return MealsUiModel.Success(meals)
+            _mealsUiModel.update {
+                it.copy(
+                    isLoading = false,
+                    isError = false,
+                    meals = meals,
+                )
+            }
+        }
     }
 }

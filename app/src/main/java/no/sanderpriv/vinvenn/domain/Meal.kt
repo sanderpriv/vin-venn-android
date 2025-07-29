@@ -5,8 +5,9 @@ data class Meal(
     val name: String,
 )
 
-sealed interface MealsUiModel {
-    data object Loading : MealsUiModel
-    data object Failed : MealsUiModel
-    data class Success(val meals: List<Meal>) : MealsUiModel
-}
+data class MealsUiModel(
+    val isLoading: Boolean = true,
+    val isError: Boolean = false,
+    val isRefreshing: Boolean = false,
+    val meals: List<Meal> = emptyList(),
+)
