@@ -47,7 +47,7 @@ class VinVennRepository(
             vinVennCacheDao.insertMeals(
                 MealsDb(
                     dto = dto,
-                    expirationDate = Date().apply { time += TimeUnit.DAYS.toMillis(1) } // Cache for 1 day
+                    expirationDate = Date().apply { time += TimeUnit.DAYS.toMillis(7) } // Cache for a week
                 )
             )
 
