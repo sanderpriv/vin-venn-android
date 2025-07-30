@@ -2,12 +2,14 @@ package no.sanderpriv.vinvenn.ui.meals
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import no.sanderpriv.vinvenn.domain.MealsUiModel
 import no.sanderpriv.vinvenn.repository.VinVennRepository
+import kotlin.time.Duration.Companion.seconds
 
 class MealsViewModel(
     private val vinVennRepository: VinVennRepository,
@@ -23,7 +25,10 @@ class MealsViewModel(
     fun refresh() {
         _mealsUiModel.update { it.copy(isRefreshing = true) }
         loadMeals()
-        _mealsUiModel.update { it.copy(isRefreshing = true) }
+        viewModelScope.launch {
+            delay(0.5.seconds) // Ugly delay to let refresh animation, should be fixed in later material 3 versions
+            _mealsUiModel.update { it.copy(isRefreshing = false) }
+        }
     }
 
     fun loadMeals() {

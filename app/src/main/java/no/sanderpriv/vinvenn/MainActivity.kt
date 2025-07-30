@@ -8,7 +8,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.core.net.toUri
-import no.sanderpriv.vinvenn.ui.VinvennScreen
+import no.sanderpriv.vinvenn.ui.navigation.VinVennNavigation
 import no.sanderpriv.vinvenn.ui.theme.VinvennTheme
 
 class MainActivity : ComponentActivity() {
@@ -20,9 +20,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             VinvennTheme {
-                VinvennScreen(
-                    urlClick = ::onUrlClick,
-                )
+                VinVennNavigation(urlClick = ::onUrlClick)
             }
         }
     }
