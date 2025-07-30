@@ -30,9 +30,6 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -40,7 +37,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import no.sanderpriv.vinvenn.domain.Meal
-import no.sanderpriv.vinvenn.domain.MealsUiModel
 import no.sanderpriv.vinvenn.ui.common.LoadingView
 import no.sanderpriv.vinvenn.ui.theme.VinvennTheme
 import no.sanderpriv.vinvenn.ui.theme.background
@@ -55,10 +51,19 @@ fun PickMealScreen(
     onMealClick: (meal: Meal) -> Unit,
     viewModel: MealsViewModel = koinViewModel(),
 ) {
-    val mealsResult by viewModel.mealsUiModel.collectAsStateWithLifecycle()
+    val meals by viewModel.meals.collectAsStateWithLifecycle()
+    val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
+    val isRefreshing by viewModel.isRefreshing.collectAsStateWithLifecycle()
+    val isError by viewModel.isError.collectAsStateWithLifecycle()
+    val query by viewModel.searchQuery.collectAsStateWithLifecycle()
 
     PickMealsView(
-        mealsResult = mealsResult,
+        isLoading = isLoading,
+        isRefreshing = isRefreshing,
+        isError = isError,
+        meals = meals,
+        searchQuery = query,
+        onSearch = viewModel::onSearch,
         onRefresh = viewModel::refresh,
         onRetry = viewModel::loadMeals,
         onMealClick = onMealClick,
@@ -68,9 +73,14 @@ fun PickMealScreen(
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
 private fun PickMealsView(
-    mealsResult: MealsUiModel,
+    isLoading: Boolean,
+    isRefreshing: Boolean,
+    isError: Boolean,
+    meals: List<Meal>,
+    searchQuery: String,
     onRefresh: () -> Unit,
     onRetry: () -> Unit,
+    onSearch: (String) -> Unit,
     onMealClick: (Meal) -> Unit,
 ) {
     Scaffold(
@@ -85,7 +95,6 @@ private fun PickMealsView(
         }
     ) { innerPadding ->
 
-        var query by rememberSaveable { mutableStateOf("") }
         Column(
             modifier = Modifier
                 .padding(innerPadding)
@@ -101,9 +110,9 @@ private fun PickMealsView(
                 shape = RoundedCornerShape(8.dp),
                 inputField = {
                     SearchBarDefaults.InputField(
-                        query = query,
-                        onQueryChange = { query = it },
-                        onSearch = { /* TODO */ },
+                        query = searchQuery,
+                        onQueryChange = { onSearch(it) },
+                        onSearch = { },
                         expanded = true,
                         onExpandedChange = { },
                         placeholder = {
@@ -112,8 +121,8 @@ private fun PickMealsView(
                             )
                         },
                         trailingIcon = {
-                            if (query.isNotEmpty()) {
-                                IconButton(onClick = { query = "" }) {
+                            if (searchQuery.isNotEmpty()) {
+                                IconButton(onClick = { onSearch("") }) {
                                     Icon(
                                         imageVector = Icons.Default.Clear,
                                         contentDescription = "Tøm"
@@ -129,14 +138,14 @@ private fun PickMealsView(
             }
 
             PullToRefreshBox(
-                isRefreshing = mealsResult.isRefreshing,
+                isRefreshing = isRefreshing,
                 onRefresh = onRefresh,
             ) {
 
                 when {
-                    mealsResult.isLoading -> LoadingView()
-                    mealsResult.isError -> FailedView(onRetry = onRetry)
-                    else -> MealsView(mealsResult.meals, onMealClick)
+                    isLoading -> LoadingView()
+                    isError -> FailedView(onRetry = onRetry)
+                    else -> MealsView(meals, onMealClick)
                 }
             }
         }
@@ -164,7 +173,9 @@ fun MealsView(
                 .padding(horizontal = 8.dp)
         ) {
             Row(
-                modifier = Modifier.padding(16.dp).fillMaxWidth(),
+                modifier = Modifier
+                    .padding(16.dp)
+                    .fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween,
             ) {
@@ -188,16 +199,23 @@ fun MealsView(
 @Composable
 private fun Preview() = VinvennTheme {
     PickMealsView(
-        mealsResult = MealsUiModel(
-            isLoading = false, meals = listOf(
-                Meal("id", "Aioli"),
-                Meal("id", "Aioli"),
-                Meal("id", "Aioli"),
-                Meal("id", "Aioli"),
-                Meal("id", "Aioli"),
-                Meal("id", "Aioli"),
-                Meal("id", "Aioli"),
-                Meal("id", "Aioli"),
-            )
-        ), onRefresh = {}, onRetry = {}, onMealClick = {})
+        isError = false,
+        isLoading = false,
+        isRefreshing = true,
+        meals = listOf(
+            Meal("id", "Aioli"),
+            Meal("id", "Aioli"),
+            Meal("id", "Aioli"),
+            Meal("id", "Aioli"),
+            Meal("id", "Aioli"),
+            Meal("id", "Aioli"),
+            Meal("id", "Aioli"),
+            Meal("id", "Aioli"),
+        ),
+        searchQuery = "Sushi",
+        onSearch = {},
+        onRefresh = {},
+        onRetry = {},
+        onMealClick = {},
+    )
 }
