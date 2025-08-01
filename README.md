@@ -3,7 +3,7 @@ Androidklient til [Vinvenn.no](https://vinvenn.no) laget med Kotlin og Jetpack C
 
 Features
 * [x] Anbefaling av viner til matrett ✅
-* [ ] Søk på matrett
+* [x] Søk på matrett
 * [ ] Filtrere viner på pris
 * [ ] Finne nærmeste bestillingssted basert på gps
 * [ ] Finne vin til egen matrett
