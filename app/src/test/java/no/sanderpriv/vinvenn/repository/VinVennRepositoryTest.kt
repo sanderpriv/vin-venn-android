@@ -72,10 +72,10 @@ class VinVennRepositoryTest {
             expirationDate = Date().apply { time += TimeUnit.HOURS.toSeconds(2) }
         )
         coEvery { cache.getMealsDb() } returns cacheDb
-        coEvery { vinVennApi.getMeals() } returns Response.success(cachedMealsDto)
         val result = repository.getMeals()
         assertTrue(result.isSuccess)
         assertEquals(listOf(Meal(id = "id_3", name = "Sushi")), result.getOrNull())
+        coVerify(exactly = 0) { vinVennApi.getMeals() }
     }
 
     // Test when cache IS expired (should fetch from API)
