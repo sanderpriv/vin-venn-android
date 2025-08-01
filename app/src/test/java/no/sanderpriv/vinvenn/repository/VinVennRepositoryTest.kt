@@ -44,8 +44,8 @@ class VinVennRepositoryTest {
         )
         coEvery { vinVennApi.getMeals() } returns Response.success(mealsDto)
         val expectedMeals = listOf(
-            Meal(id = "id_1", name = "Pizza"),
             Meal(id = "id_2", name = "Burger"),
+            Meal(id = "id_1", name = "Pizza"),
         )
         val result = repository.getMeals()
         assertTrue(result.isSuccess)
